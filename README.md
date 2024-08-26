@@ -1,14 +1,11 @@
-# NextGen CI Helm Charts Repository
-
 Welcome to the official Helm repository for NextGen CI. This repository contains Helm charts for deploying and managing the core components of the NextGen CI platform.
-
 
 ## Installation
 
 To start using the Helm charts from this repository, add the repository to your Helm client with the following command:
 
 ```shell
-helm repo add add nextgenci https://helm-nextgenci.msharbaji.com
+helm repo add add nextgenci https://helm-nextgenci.malsharbaji.com
 ```
 
 To update and view all available charts in the repository, run:
@@ -39,4 +36,3 @@ Install the Helm chart:
 ```shell
 helm install nextgenci-ci ./nextgenci-ci --namespace nextgenci --wait
 ```
-
