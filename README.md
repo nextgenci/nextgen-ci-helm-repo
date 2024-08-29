@@ -1,38 +1,94 @@
 Welcome to the official Helm repository for NextGen CI. This repository contains Helm charts for deploying and managing the core components of the NextGen CI platform.
 
+## Table of Contents
+
+1. [Installation](#installation)
+2. [Local Testing](#local-testing)
+   - [Prepare your system](#prepare-your-system)
+   - [Create a kind cluster](#create-a-kind-cluster)
+3. [Deploying the Helm chart](#deploying-the-helm-chart)
+4. [Verify Deployment](#verify-deployment)
+
 ## Installation
 
-To start using the Helm charts from this repository, add the repository to your Helm client with the following command:
+To start using the Helm charts from this repository, add it to your Helm client with the following command:
 
 ```shell
-helm repo add add nextgenci https://helm-nextgenci.malsharbaji.com
+helm repo add nextgenci https://helm-nextgenci.malsharbaji.com
 ```
 
 To update and view all available charts in the repository, run:
 
 ```shell
-helm repo update nextgenci
+helm repo update
 helm search repo nextgenci
 ```
 
-From here, you can install or upgrade Helm charts as follows:
+You can then install or upgrade Helm charts using:
 
 ```shell
 helm upgrade --install nextgenci-ci nextgenci/nextgenci-ci --namespace nextgenci --wait
 ```
 
-## Local Testing 
+## Local Testing
 
-If you want to test these helm charts on your local machine, follow the following instructions:
+To test these Helm charts on your local machine, you can use [Kind](https://kind.sigs.k8s.io/docs/user/quick-start/), a tool for running local Kubernetes clusters using Docker container nodes. Follow the steps below to set up a local testing environment.
 
-Prepare your system to run Kind clusters:
 
+### Prepare Your System
+
+To set up a local Kubernetes cluster with Kind, create a configuration file named `cluster.yaml`. This file defines the cluster configuration, including port mappings and registry settings.
+
+Here is an example of a Kind configuration file:
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      config_path = "/etc/containerd/certs.d"
+name: tooling
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+ ```
+   Save this content to a file named cluster.yaml in your current directory.
+
+
+### Create a Kind Cluster
+
+run the [Makefile](kind-cluster/Makefile) to create a Kind cluster and set up the local environment.
 ```shell
-kind create cluster --name nextgenci
+make setup-env --makefile=kind-cluster/Makefile
 ```
 
-Install the Helm chart:
+## Deploying the Helm chart
+
+With the Kind cluster running, you can now deploy the NextGen CI components using Helm. First, ensure your repository is cloned to your local machine.
 
 ```shell
-helm install nextgenci-ci ./nextgenci-ci --namespace nextgenci --wait
+helm install nextgenci-ci ./nextgenci-ci --namespace nextgenci --wait`
 ```
+This command will deploy the NextGen CI components into the nextgenci namespace within your Kind cluster. The --wait flag ensures that Helm waits until all components are successfully deployed.
+
+## Verify Deployment
+
+To verify that the deployment was successful, check the status of the Helm release:
+
+```shell
+helm list -n nextgenci
+```
+This command lists all Helm releases in the nextgenci namespace, allowing you to verify the status of your NextGen CI deployment.
