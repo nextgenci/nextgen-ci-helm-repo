@@ -65,14 +65,14 @@ nodes:
         hostPort: 443
         protocol: TCP
  ```
-   Save this content to a file named cluster.yaml in your current directory.
+   Save this content to a file named `cluster.yaml` in your current directory.
 
 
 ### Create a Kind Cluster
 
-run the [Makefile](kind-cluster/Makefile) to create a Kind cluster and set up the local environment.
+Download the [Makefile](kind-cluster/Makefile) in your current directory to create a Kind cluster and set up the local environment.
 ```shell
-make setup-env --makefile=kind-cluster/Makefile
+make setup-env
 ```
 
 ## Deploying the Helm chart
